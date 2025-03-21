@@ -1,135 +1,138 @@
 package Assign3;
 
-/**
- * CryptoManager class that provides methods for encryption and decryption
- * using Caesar and Bellaso Ciphers.
- *
- * Class: CMSC203
- * Instructor: [Your Instructor's Name]
- * Description: Implements encryption and decryption methods for two cipher techniques.
- * Due: [Due Date]
- * Platform/compiler: Eclipse
- * 
- * I pledge that I have completed the programming assignment independently.
- * I have not copied the code from a student or any source.
- * I have not given my code to any student.
- * Print your Name here: Ange Stephy Ongoue Wetomdie
- */
-
 public class CryptoManager {
+    
+    // Constant for valid range of characters (A-Z and a-z)
+    private static final int LOWER_RANGE = 65;  // 'A'
+    private static final int UPPER_RANGE = 122; // 'z'
 
-    private static final char LOWER_RANGE = ' ';
-    private static final char UPPER_RANGE = '_';
-    private static final int RANGE = UPPER_RANGE - LOWER_RANGE + 1;
-
-    /**
-     * Determines if a string is within the allowable ASCII bounds.
-     * 
-     * @param plainText The string to be checked.
-     * @return True if all characters are within the allowable bounds, false otherwise.
-     */
-    public static boolean isStringInBounds(String plainText) {
-        for (char ch : plainText.toCharArray()) {
-            if (ch < LOWER_RANGE || ch > UPPER_RANGE) {
-                return false;
+    // Method to check if a string contains valid characters (within the acceptable range)
+    public static boolean isStringInBounds(String plaintext) {
+        for (int i = 0; i < plaintext.length(); i++) {
+            char c = plaintext.charAt(i);
+            if (c < LOWER_RANGE || (c > 'Z' && c < 'a') || c > UPPER_RANGE) {
+                return false; // Invalid character found
             }
         }
-        return true;
+        return true; // All characters are valid
     }
 
-    /**
-     * Encrypts a string using the Caesar Cipher.
-     * 
-     * @param plainText The uppercase string to be encrypted.
-     * @param key The offset key for shifting characters.
-     * @return The encrypted string, or an error message if the string is out of bounds.
-     */
-    public static String caesarEncryption(String plainText, int key) {
-        if (!isStringInBounds(plainText)) {
+    // Caesar Cipher Encryption
+    public static String caesarEncryption(String plaintext, int key) {
+        if (!isStringInBounds(plaintext)) {
             return "The selected string is not in bounds, Try again.";
         }
 
         StringBuilder encryptedText = new StringBuilder();
-        key = key % RANGE; // Ensure key is within bounds
+        for (int i = 0; i < plaintext.length(); i++) {
+            char c = plaintext.charAt(i);
+            int encryptedChar = c + key;
 
-        for (char ch : plainText.toCharArray()) {
-            char encryptedChar = (char) (ch + key);
-            while (encryptedChar > UPPER_RANGE) {
-                encryptedChar -= RANGE;
+            // Adjust for range
+            if (c >= 'A' && c <= 'Z') {
+                encryptedChar = ((encryptedChar - 'A') % 26 + 26) % 26 + 'A';
+            } else if (c >= 'a' && c <= 'z') {
+                encryptedChar = ((encryptedChar - 'a') % 26 + 26) % 26 + 'a';
             }
-            encryptedText.append(encryptedChar);
+
+            encryptedText.append((char) encryptedChar);
         }
+
         return encryptedText.toString();
     }
 
-    /**
-     * Decrypts a string encrypted using the Caesar Cipher.
-     * 
-     * @param encryptedText The encrypted string.
-     * @param key The offset key used for encryption.
-     * @return The decrypted plain text string.
-     */
+    // Bellaso Cipher Encryption
+    public static String bellasoEncryption(String plaintext, String bellasoStr) {
+        if (!isStringInBounds(plaintext)) {
+            return "The selected string is not in bounds, Try again.";
+        }
+
+        StringBuilder encryptedText = new StringBuilder();
+        int bellasoIndex = 0;
+
+        for (int i = 0; i < plaintext.length(); i++) {
+            char c = plaintext.charAt(i);
+            char bellasoChar = bellasoStr.charAt(bellasoIndex % bellasoStr.length());
+
+            // Encrypt each character
+            int encryptedChar = c + bellasoChar;
+
+            // Adjust for range
+            if (c >= 'A' && c <= 'Z') {
+                encryptedChar = ((encryptedChar - 'A') % 26 + 26) % 26 + 'A';
+            } else if (c >= 'a' && c <= 'z') {
+                encryptedChar = ((encryptedChar - 'a') % 26 + 26) % 26 + 'a';
+            }
+
+            encryptedText.append((char) encryptedChar);
+            bellasoIndex++;
+        }
+
+        return encryptedText.toString();
+    }
+
+    // Caesar Cipher Decryption
     public static String caesarDecryption(String encryptedText, int key) {
         StringBuilder decryptedText = new StringBuilder();
-        key = key % RANGE; // Ensure key is within bounds
+        for (int i = 0; i < encryptedText.length(); i++) {
+            char c = encryptedText.charAt(i);
+            int decryptedChar = c - key;
 
-        for (char ch : encryptedText.toCharArray()) {
-            char decryptedChar = (char) (ch - key);
-            while (decryptedChar < LOWER_RANGE) {
-                decryptedChar += RANGE;
+            // Adjust for range
+            if (c >= 'A' && c <= 'Z') {
+                decryptedChar = ((decryptedChar - 'A') % 26 + 26) % 26 + 'A';
+            } else if (c >= 'a' && c <= 'z') {
+                decryptedChar = ((decryptedChar - 'a') % 26 + 26) % 26 + 'a';
             }
-            decryptedText.append(decryptedChar);
+
+            decryptedText.append((char) decryptedChar);
         }
+
         return decryptedText.toString();
     }
 
-    /**
-     * Encrypts a string using the Bellaso Cipher.
-     * 
-     * @param plainText The string to be encrypted.
-     * @param bellasoStr The key string used for encryption.
-     * @return The encrypted string, or an error message if the string is out of bounds.
-     */
-    public static String bellasoEncryption(String plainText, String bellasoStr) {
-        if (!isStringInBounds(plainText)) {
-            return "The selected string is not in bounds, Try again.";
-        }
-
-        StringBuilder encryptedText = new StringBuilder();
-        int bellasoStrLen = bellasoStr.length();
-
-        for (int i = 0; i < plainText.length(); i++) {
-            char ch = plainText.charAt(i);
-            char keyChar = bellasoStr.charAt(i % bellasoStrLen);
-            char encryptedChar = (char) (ch + keyChar);
-            while (encryptedChar > UPPER_RANGE) {
-                encryptedChar -= RANGE;
-            }
-            encryptedText.append(encryptedChar);
-        }
-        return encryptedText.toString();
-    }
-
-    /**
-     * Decrypts a string encrypted using the Bellaso Cipher.
-     * 
-     * @param encryptedText The encrypted string.
-     * @param bellasoStr The key string used for encryption.
-     * @return The decrypted plain text string.
-     */
+    // Bellaso Cipher Decryption
     public static String bellasoDecryption(String encryptedText, String bellasoStr) {
         StringBuilder decryptedText = new StringBuilder();
-        int bellasoStrLen = bellasoStr.length();
+        int bellasoIndex = 0;
 
         for (int i = 0; i < encryptedText.length(); i++) {
-            char ch = encryptedText.charAt(i);
-            char keyChar = bellasoStr.charAt(i % bellasoStrLen);
-            char decryptedChar = (char) (ch - keyChar);
-            while (decryptedChar < LOWER_RANGE) {
-                decryptedChar += RANGE;
+            char c = encryptedText.charAt(i);
+            char bellasoChar = bellasoStr.charAt(bellasoIndex % bellasoStr.length());
+
+            // Decrypt each character
+            int decryptedChar = c - bellasoChar;
+
+            // Adjust for range
+            if (c >= 'A' && c <= 'Z') {
+                decryptedChar = ((decryptedChar - 'A') % 26 + 26) % 26 + 'A';
+            } else if (c >= 'a' && c <= 'z') {
+                decryptedChar = ((decryptedChar - 'a') % 26 + 26) % 26 + 'a';
             }
-            decryptedText.append(decryptedChar);
+
+            decryptedText.append((char) decryptedChar);
+            bellasoIndex++;
         }
+
         return decryptedText.toString();
+    }
+
+    public static void main(String[] args) {
+        // Sample inputs for encryption and decryption
+        String plaintext = "MERRY CHRISTMAS";
+        int caesarKey = 5;
+        String bellasoStr = "HELLO";
+
+        // Caesar Cipher encryption and decryption
+        String caesarEncrypted = caesarEncryption(plaintext, caesarKey);
+        System.out.println("Caesar Encrypted: " + caesarEncrypted);
+        String caesarDecrypted = caesarDecryption(caesarEncrypted, caesarKey);
+        System.out.println("Caesar Decrypted: " + caesarDecrypted);
+
+        // Bellaso Cipher encryption and decryption
+        String bellasoEncrypted = bellasoEncryption(plaintext, bellasoStr);
+        System.out.println("Bellaso Encrypted: " + bellasoEncrypted);
+        String bellasoDecrypted = bellasoDecryption(bellasoEncrypted, bellasoStr);
+        System.out.println("Bellaso Decrypted: " + bellasoDecrypted);
     }
 }
